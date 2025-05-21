@@ -13,20 +13,21 @@ const Home = () => {
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
   const [panelOpen, setPanelOpen] = useState(false);
+  const [vehiclePanel, setVehiclePanel] = useState(false);
+  const [activeField, setActiveField] = useState(null);
 
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
+  const vehiclePanelRef = useRef(null);
 
   const submitHandler = (e) => {
     e.preventDefault();
-
     if (!pickup.trim() || !destination.trim()) return;
-
     console.log({ pickup, destination });
-
     setPickup('');
     setDestination('');
     setPanelOpen(false);
+    setVehiclePanel(false);
   };
 
   useGSAP(() => {
@@ -47,6 +48,15 @@ const Home = () => {
     });
   }, [panelOpen]);
 
+  useGSAP(() => {
+    if (!vehiclePanelRef.current) return;
+    gsap.to(vehiclePanelRef.current, {
+      y: vehiclePanel ? 0 : '100%',
+      ease: 'power2.out',
+      duration: 0.4,
+    });
+  }, [vehiclePanel]);
+
   return (
     <div className='h-screen relative overflow-hidden'>
       <img className='w-16 absolute left-5 top-5' src={uberLogo} alt='uber-logo' />
@@ -55,7 +65,6 @@ const Home = () => {
         <img className='h-full w-full object-cover' src={uberTemplate} alt='template' />
       </div>
 
-      {/* Input Panel */}
       <div className='flex flex-col justify-end absolute top-0 w-full'>
         <div className='h-[30%] bg-white p-5 z-10 relative'>
           <button
@@ -73,7 +82,8 @@ const Home = () => {
             <input
               className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-5'
               onClick={() => {
-                if (!panelOpen) setPanelOpen(true);
+                setActiveField('pickup');
+                setPanelOpen(true);
               }}
               value={pickup}
               onChange={(e) => setPickup(e.target.value)}
@@ -84,7 +94,8 @@ const Home = () => {
             <input
               className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-5'
               onClick={() => {
-                if (!panelOpen) setPanelOpen(true);
+                setActiveField('destination');
+                setPanelOpen(true);
               }}
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
@@ -94,44 +105,57 @@ const Home = () => {
           </form>
         </div>
 
-        {/* Animated Panel (Slide from bottom) */}
+        {/* Animated Panel */}
         <div
           ref={panelRef}
           className='fixed bottom-0 left-0 w-full h-0 bg-white z-20 overflow-y-auto p-0 transition-all duration-300 ease-in-out'
         >
-          <LocationSearchPanel />
+          <LocationSearchPanel
+            setVehiclePanel={setVehiclePanel}
+            setPickup={setPickup}
+            setDestination={setDestination}
+            activeField={activeField}
+          />
 
-          {/* Vehicle Options (Inside Panel) */}
-          <h3 className='text-2xl font-semibold my-5'>Choose a Vehicle</h3>
+          {/* Vehicle Options */}
+          <div ref={vehiclePanelRef} className='transition-transform'>
+            <h3 className='text-2xl font-semibold my-5'>Choose a Vehicle</h3>
 
-          <div className='flex border-2 active:bg-gray-100 border-black rounded-xl items-center justify-between w-full mb-5 p-4'>
-            <img className='h-10' src={car} alt='car' />
-            <div className='w-1/2'>
-              <h4 className='font-medium text-sm'>UberGo <span><i className="ri-user-3-line"></i></span></h4>
-              <h5 className='font-medium text-sm'>2 mins away</h5>
-              <p className='font-medium text-xs text-gray-500'>Affordable, compact rides</p>
+            <div className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full mb-5 p-4'>
+              <img className='h-10' src={car} alt='car' />
+              <div className='w-1/2'>
+                <h4 className='font-medium text-sm'>
+                  UberGo <span><i className="ri-user-3-line"></i></span>
+                </h4>
+                <h5 className='font-medium text-sm'>2 mins away</h5>
+                <p className='font-medium text-xs text-gray-500'>Affordable, compact rides</p>
+              </div>
+              <h2 className='text-2xl font-semibold'>$193</h2>
             </div>
-            <h2 className='text-2xl font-semibold'>$193</h2>
-          </div>
 
-          <div className='flex border-2 active:border-black rounded-xl items-center justify-between w-full mb-5 p-4'>
-            <img className='h-10' src={motorcycle} alt='motorcycle' />
-            <div className='w-1/2'>
-              <h4 className='font-medium text-sm'>Moto <span><i className="ri-user-3-line"></i>1</span></h4>
-              <h5 className='font-medium text-sm'>3 mins away</h5>
-              <p className='font-medium text-xs text-gray-500'>Affordable, motorcycle rides</p>
+            <div className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full mb-5 p-4'>
+              <img className='h-10' src={motorcycle} alt='motorcycle' />
+              <div className='w-1/2'>
+                <h4 className='font-medium text-sm'>
+                  Moto <span><i className="ri-user-3-line"></i>1</span>
+                </h4>
+                <h5 className='font-medium text-sm'>3 mins away</h5>
+                <p className='font-medium text-xs text-gray-500'>Affordable, motorcycle rides</p>
+              </div>
+              <h2 className='text-2xl font-semibold'>$65</h2>
             </div>
-            <h2 className='text-2xl font-semibold'>$65</h2>
-          </div>
 
-          <div className='flex border-2 active:border-black rounded-xl items-center justify-between w-full p-4'>
-            <img className='h-10' src={mahindra} alt='mahindra' />
-            <div className='w-1/2'>
-              <h4 className='font-medium text-sm'>UberAuto <span><i className="ri-user-3-line"></i>6</span></h4>
-              <h5 className='font-medium text-sm'>2 mins away</h5>
-              <p className='font-medium text-xs text-gray-500'>Affordable, Auto rides</p>
+            <div className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full p-4'>
+              <img className='h-10' src={mahindra} alt='mahindra' />
+              <div className='w-1/2'>
+                <h4 className='font-medium text-sm'>
+                  UberAuto <span><i className="ri-user-3-line"></i>6</span>
+                </h4>
+                <h5 className='font-medium text-sm'>2 mins away</h5>
+                <p className='font-medium text-xs text-gray-500'>Affordable, Auto rides</p>
+              </div>
+              <h2 className='text-2xl font-semibold'>$100</h2>
             </div>
-            <h2 className='text-2xl font-semibold'>$100</h2>
           </div>
         </div>
       </div>
