@@ -8,6 +8,8 @@ import LocationSearchPanel from '../components/LocationSearchPanel';
 import car from '../assets/car.png';
 import motorcycle from '../assets/motorcycle.jpeg';
 import mahindra from '../assets/mahindra.png';
+import VehiclePanel from '../components/VehiclePanel';
+import ConfrimRide from '../components/ConfrimRide';
 
 const Home = () => {
   const [pickup, setPickup] = useState('');
@@ -15,10 +17,12 @@ const Home = () => {
   const [panelOpen, setPanelOpen] = useState(false);
   const [vehiclePanel, setVehiclePanel] = useState(false);
   const [activeField, setActiveField] = useState(null);
+  const confirmRidePanelRef = useRef(null)
 
   const panelRef = useRef(null);
   const panelCloseRef = useRef(null);
   const vehiclePanelRef = useRef(null);
+  const [confirmRidePanel , setConfirmRidePanel] =useState(false)
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -31,38 +35,64 @@ const Home = () => {
   };
 
   useGSAP(() => {
-    if (!panelRef.current || !panelCloseRef.current) return;
+    const ctx = gsap.context(() => {
+      if (!panelRef.current || !panelCloseRef.current) return;
 
-    gsap.to(panelRef.current, {
-      height: panelOpen ? '70%' : '0%',
-      padding: panelOpen ? 24 : 0,
-      opacity: panelOpen ? 1 : 0,
-      ease: 'power2.out',
-      duration: 0.4,
-    });
+      gsap.to(panelRef.current, {
+        height: panelOpen ? '70%' : '0%',
+        padding: panelOpen ? 24 : 0,
+        opacity: panelOpen ? 1 : 0,
+        ease: 'power2.out',
+        duration: 0.4,
+      });
 
-    gsap.to(panelCloseRef.current, {
-      opacity: panelOpen ? 1 : 0,
-      ease: 'power2.out',
-      duration: 0.3,
+      gsap.to(panelCloseRef.current, {
+        opacity: panelOpen ? 1 : 0,
+        ease: 'power2.out',
+        duration: 0.3,
+      });
     });
+    return () => ctx.revert();
   }, [panelOpen]);
 
   useGSAP(() => {
-    if (!vehiclePanelRef.current) return;
-    gsap.to(vehiclePanelRef.current, {
-      y: vehiclePanel ? 0 : '100%',
-      ease: 'power2.out',
-      duration: 0.4,
+    const ctx = gsap.context(() => {
+      if (!vehiclePanelRef.current) return;
+      gsap.to(vehiclePanelRef.current, {
+        y: vehiclePanel ? 0 : '100%',
+        ease: 'power2.out',
+        duration: 0.4,
+      });
     });
+    return () => ctx.revert();
   }, [vehiclePanel]);
+
+
+
+
+
+
+
+
+
+   useGSAP(() => {
+    const ctx = gsap.context(() => {
+      if (!confirmRidePanel.current) return;
+      gsap.to(confirmRidePanel.current, {
+        y: vehiclePanel ? 0 : '100%',
+        ease: 'power2.out',
+        duration: 0.4,
+      });
+    });
+    return () => ctx.revert();
+  }, [confirmRidePanel]);
 
   return (
     <div className='h-screen relative overflow-hidden'>
-      <img className='w-16 absolute left-5 top-5' src={uberLogo} alt='uber-logo' />
+      <img className='w-16 absolute left-5 top-5' src={uberLogo} alt='Uber Logo' />
 
       <div className='h-screen w-screen'>
-        <img className='h-full w-full object-cover' src={uberTemplate} alt='template' />
+        <img className='h-full w-full object-cover' src={uberTemplate} alt='Map background template' />
       </div>
 
       <div className='flex flex-col justify-end absolute top-0 w-full'>
@@ -71,6 +101,7 @@ const Home = () => {
             ref={panelCloseRef}
             onClick={() => setPanelOpen(false)}
             className='absolute opacity-0 top-6 right-6 text-xl cursor-pointer text-black'
+            aria-label='Close location panel'
           >
             <i className="ri-arrow-down-wide-line"></i>
           </button>
@@ -105,7 +136,7 @@ const Home = () => {
           </form>
         </div>
 
-        {/* Animated Panel */}
+        {/* Animated Location Search Panel */}
         <div
           ref={panelRef}
           className='fixed bottom-0 left-0 w-full h-0 bg-white z-20 overflow-y-auto p-0 transition-all duration-300 ease-in-out'
@@ -117,45 +148,12 @@ const Home = () => {
             activeField={activeField}
           />
 
-          {/* Vehicle Options */}
+          {/* Vehicle Selection Panel */}
           <div ref={vehiclePanelRef} className='transition-transform'>
-            <h3 className='text-2xl font-semibold my-5'>Choose a Vehicle</h3>
-
-            <div className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full mb-5 p-4'>
-              <img className='h-10' src={car} alt='car' />
-              <div className='w-1/2'>
-                <h4 className='font-medium text-sm'>
-                  UberGo <span><i className="ri-user-3-line"></i></span>
-                </h4>
-                <h5 className='font-medium text-sm'>2 mins away</h5>
-                <p className='font-medium text-xs text-gray-500'>Affordable, compact rides</p>
-              </div>
-              <h2 className='text-2xl font-semibold'>$193</h2>
-            </div>
-
-            <div className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full mb-5 p-4'>
-              <img className='h-10' src={motorcycle} alt='motorcycle' />
-              <div className='w-1/2'>
-                <h4 className='font-medium text-sm'>
-                  Moto <span><i className="ri-user-3-line"></i>1</span>
-                </h4>
-                <h5 className='font-medium text-sm'>3 mins away</h5>
-                <p className='font-medium text-xs text-gray-500'>Affordable, motorcycle rides</p>
-              </div>
-              <h2 className='text-2xl font-semibold'>$65</h2>
-            </div>
-
-            <div className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full p-4'>
-              <img className='h-10' src={mahindra} alt='mahindra' />
-              <div className='w-1/2'>
-                <h4 className='font-medium text-sm'>
-                  UberAuto <span><i className="ri-user-3-line"></i>6</span>
-                </h4>
-                <h5 className='font-medium text-sm'>2 mins away</h5>
-                <p className='font-medium text-xs text-gray-500'>Affordable, Auto rides</p>
-              </div>
-              <h2 className='text-2xl font-semibold'>$100</h2>
-            </div>
+            <VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
+          </div>
+          <div ref={confirmRidePanelRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-14'>
+                   <ConfrimRide/>
           </div>
         </div>
       </div>
