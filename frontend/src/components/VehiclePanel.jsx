@@ -3,58 +3,31 @@ import car from '../assets/car.png';
 import motorcycle from '../assets/motorcycle.jpeg';
 import mahindra from '../assets/mahindra.png';
 
-const VehiclePanel = ({ setVehiclePanel }) => {
+const VehiclePanel = ({ onSelectVehicle }) => {
+  const vehicles = [
+    { img: car, name: 'UberGo', wait: '2 mins', desc: 'Compact rides', price: '$193' },
+    { img: motorcycle, name: 'Moto', wait: '3 mins', desc: 'Motorcycle rides', price: '$65' },
+    { img: mahindra, name: 'UberAuto', wait: '2 mins', desc: 'Auto rides', price: '$100' },
+  ];
+
   return (
-    <div className='relative p-5'>
-      <h5
-        className='p-3 text-center absolute top-0 w-[93%] cursor-pointer'
-        onClick={() => setVehiclePanel(false)}
-      >
-        <i className="text-3xl ri-arrow-down-line"></i>
-      </h5>
-      <h3 className='text-2xl font-semibold my-12 text-center'>Choose a Vehicle</h3>
-
-          <div onClick={() => {
-              setVehiclePanel(true)
-      }} className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full mb-5 p-4'>
-        <img className='h-10' src={car} alt='car' />
-        <div className='w-1/2'>
-          <h4 className='font-medium text-sm'>
-            UberGo <span><i className="ri-user-3-line"></i></span>
-          </h4>
-          <h5 className='font-medium text-sm'>2 mins away</h5>
-          <p className='font-medium text-xs text-gray-500'>Affordable, compact rides</p>
+    <div className='p-5'>
+      <h3 className='text-2xl font-semibold mb-8 text-center'>Choose a Vehicle</h3>
+      {vehicles.map((v, i) => (
+        <div
+          key={i}
+          onClick={onSelectVehicle}
+          className='flex items-center justify-between border-2 rounded-xl p-4 mb-4 hover:bg-gray-100 cursor-pointer'
+        >
+          <img className='h-10' src={v.img} alt={v.name} />
+          <div className='w-1/2'>
+            <h4 className='font-medium text-sm'>{v.name}</h4>
+            <h5 className='text-sm'>{v.wait} away</h5>
+            <p className='text-xs text-gray-500'>{v.desc}</p>
+          </div>
+          <h2 className='text-2xl font-semibold'>{v.price}</h2>
         </div>
-        <h2 className='text-2xl font-semibold'>$193</h2>
-      </div>
-
-      <div  onClick={() => {
-              setVehiclePanel(true)
-      }}  className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full mb-5 p-4'>
-        <img className='h-10' src={motorcycle} alt='motorcycle' />
-        <div className='w-1/2'>
-          <h4 className='font-medium text-sm'>
-            Moto <span><i className="ri-user-3-line"></i>1</span>
-          </h4>
-          <h5 className='font-medium text-sm'>3 mins away</h5>
-          <p className='font-medium text-xs text-gray-500'>Affordable, motorcycle rides</p>
-        </div>
-        <h2 className='text-2xl font-semibold'>$65</h2>
-      </div>
-
-      <div  onClick={() => {
-              setVehiclePanel(true)
-      }}  className='flex border-2 hover:bg-gray-100 transition rounded-xl items-center justify-between w-full p-4'>
-        <img className='h-10' src={mahindra} alt='mahindra' />
-        <div className='w-1/2'>
-          <h4 className='font-medium text-sm'>
-            UberAuto <span><i className="ri-user-3-line"></i>6</span>
-          </h4>
-          <h5 className='font-medium text-sm'>2 mins away</h5>
-          <p className='font-medium text-xs text-gray-500'>Affordable, Auto rides</p>
-        </div>
-        <h2 className='text-2xl font-semibold'>$100</h2>
-      </div>
+      ))}
     </div>
   );
 };
